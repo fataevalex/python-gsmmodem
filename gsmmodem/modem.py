@@ -237,7 +237,7 @@ class GsmModem(SerialComms):
 
         # Attempt to identify modem type directly (if not already) - for outgoing call status updates
         if callUpdateTableHint == 0:
-            if self.manufacturer.lower() == 'simcom': #simcom modems support DTMF and don't support AT+CLAC
+            if 'simcom' in self.manufacturer.lower() : #simcom modems support DTMF and don't support AT+CLAC
                 Call.dtmfSupport = True 
 
             if self.manufacturer.lower() == 'huawei':
@@ -1254,13 +1254,11 @@ class Call(object):
         if self.answered:
             dtmfCommandBase = self.DTMF_COMMAND_BASE.format(cid=self.id)
             toneLen = len(tones)
-            if len(tones) > 1:
-                cmd = ('AT{0}{1};{0}' + ';{0}'.join(tones[1:])).format(dtmfCommandBase, tones[0])                
-            else:
-                cmd = 'AT{0}{1}'.format(dtmfCommandBase, tones)
-            try:
-                self._gsmModem.write(cmd, timeout=(5 + toneLen))
-            except CmeError as e:
+            for tone in list(tones):     
+              try:
+                 self._gsmModem.write('AT{0}{1}'.format(dtmfCommandBase,tone), timeout=(5 + toneLen))
+             
+              except CmeError as e:
                 if e.code == 30:
                     # No network service - can happen if call is ended during DTMF transmission (but also if DTMF is sent immediately after call is answered)
                     raise InterruptedException('No network service', e)
