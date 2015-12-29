@@ -237,6 +237,9 @@ class GsmModem(SerialComms):
 
         # Attempt to identify modem type directly (if not already) - for outgoing call status updates
         if callUpdateTableHint == 0:
+            if self.manufacturer.lower() == 'simcom': #simcom modems support DTMF and don't support AT+CLAC
+                Call.dtmfSupport = True 
+
             if self.manufacturer.lower() == 'huawei':
                 callUpdateTableHint = 1 # huawei
             else:
