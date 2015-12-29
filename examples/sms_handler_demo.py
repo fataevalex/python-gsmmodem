@@ -11,9 +11,9 @@ from __future__ import print_function
 
 import logging
 
-PORT = '/dev/ttyUSB2'
-BAUDRATE = 115200
-PIN = None # SIM card PIN (if any)
+PORT = '/dev/ttyAMA0'
+BAUDRATE = 9600
+PIN = "0000" # SIM card PIN (if any)
 
 from gsmmodem.modem import GsmModem
 

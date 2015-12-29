@@ -14,10 +14,10 @@ from __future__ import print_function
 
 import sys, time, logging
 
-PORT = '/dev/ttyUSB2'
-BAUDRATE = 115200
+PORT = '/dev/ttyAMA0'
+BAUDRATE = 9600
 NUMBER = '00000' # Number to dial - CHANGE THIS TO A REAL NUMBER
-PIN = None # SIM card PIN (if any)
+PIN = "0000" # SIM card PIN (if any)
 
 from gsmmodem.modem import GsmModem
 from gsmmodem.exceptions import InterruptedException, CommandError
