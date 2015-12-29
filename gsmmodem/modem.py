@@ -1255,18 +1255,18 @@ class Call(object):
             dtmfCommandBase = self.DTMF_COMMAND_BASE.format(cid=self.id)
             toneLen = len(tones)
             for tone in list(tones):     
-              try:
-                 self._gsmModem.write('AT{0}{1}'.format(dtmfCommandBase,tone), timeout=(5 + toneLen))
+                try:
+                    self._gsmModem.write('AT{0}{1}'.format(dtmfCommandBase,tone), timeout=(5 + toneLen))
              
-              except CmeError as e:
-                if e.code == 30:
-                    # No network service - can happen if call is ended during DTMF transmission (but also if DTMF is sent immediately after call is answered)
-                    raise InterruptedException('No network service', e)
-                elif e.code == 3:
-                    # Operation not allowed - can happen if call is ended during DTMF transmission
-                    raise InterruptedException('Operation not allowed', e)
-                else:
-                    raise e
+                except CmeError as e:
+                    if e.code == 30:
+                        # No network service - can happen if call is ended during DTMF transmission (but also if DTMF is sent immediately after call is answered)
+                            raise InterruptedException('No network service', e)
+                    elif e.code == 3:
+                        # Operation not allowed - can happen if call is ended during DTMF transmission
+                            raise InterruptedException('Operation not allowed', e)
+                    else:
+                            raise e
         else:
             raise InvalidStateException('Call is not active (it has not yet been answered, or it has ended).')
     
