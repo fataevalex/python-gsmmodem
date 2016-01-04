@@ -896,15 +896,15 @@ class GsmModem(SerialComms):
         self.log.debug('Unhandled unsolicited modem notification: %s', lines)    
     
     #Simcom modem able detect incoming DTMF
-    def _handleIncomingDTMF(self,lines):
+    def _handleIncomingDTMF(self,line):
         self.log.debug('Handling incoming DTMF')
-        dtmfLine = lines.Pop(0)
+        
         try:
-            dtmf_num=dtmfLine.split(':')[1].replace(" ","")
+            dtmf_num=line.split(':')[1].replace(" ","")
             self.dtmfpool.append(dtmf_num)
             self.log.debug('DTMF number is {0}'.format(dtmf_num))
         except:
-            self.log.debug('Error parce DTMF number on line {0}'.format(lines))
+            self.log.debug('Error parce DTMF number on line {0}'.format(line))
     def GetIncomingDTMF(self):
         if (self.dtmfpool==0):
             return None
