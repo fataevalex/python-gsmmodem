@@ -160,7 +160,7 @@ class GsmModem(SerialComms):
         self._smsMemReadDelete = None # Preferred message storage memory for reads/deletes (<mem1> parameter used for +CPMS)
         self._smsMemWrite = None # Preferred message storage memory for writes (<mem2> parameter used for +CPMS)
         self._smsReadSupported = True # Whether or not reading SMS messages is supported via AT commands
-
+        self.dtmfpool = []       #Pool of detected DTMF
     def connect(self, pin=None):
         """ Opens the port and initializes the modem and SIM card
          
@@ -239,6 +239,7 @@ class GsmModem(SerialComms):
         if callUpdateTableHint == 0:
             if 'simcom' in self.manufacturer.lower() : #simcom modems support DTMF and don't support AT+CLAC
                 Call.dtmfSupport = True 
+                self.write('AT+DDET=1')                # enable detect incoming DTMF
 
             if self.manufacturer.lower() == 'huawei':
                 callUpdateTableHint = 1 # huawei
@@ -879,6 +880,10 @@ class GsmModem(SerialComms):
                 # SMS status report
                 self._handleSmsStatusReport(line)
                 return
+            elif line.startswith('+DTMF'):
+                # SMS status report
+                self._handleIncomingDTMF(line)
+                return
             else:
                 # Check for call status updates            
                 for updateRegex, handlerFunc in self._callStatusUpdates:
@@ -889,6 +894,22 @@ class GsmModem(SerialComms):
                         return
         # If this is reached, the notification wasn't handled
         self.log.debug('Unhandled unsolicited modem notification: %s', lines)    
+    
+    #Simcom modem able detect incoming DTMF
+    def _handleIncomingDTMF(self,lines):
+        self.log.debug('Handling incoming DTMF')
+        dtmfLine = lines.Pop(0)
+        try:
+            dtmf_num=dtmfLine.split(':')[1].replace(" ","")
+            self.dtmfpool.append(dtmf_num)
+            self.log.debug('DTMF number is {0}'.format(dtmf_num))
+        except:
+            self.log.debug('Error parce DTMF number on line {0}'.format(lines))
+    def GetIncomingDTMF(self):
+        if (self.dtmfpool==0):
+            return None
+        else:
+            return self.dtmfpool.pop(0)
     
     def _handleIncomingCall(self, lines):
         self.log.debug('Handling incoming call')
