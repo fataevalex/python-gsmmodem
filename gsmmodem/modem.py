@@ -881,7 +881,7 @@ class GsmModem(SerialComms):
                 self._handleSmsStatusReport(line)
                 return
             elif line.startswith('+DTMF'):
-                # SMS status report
+                # New incoming DTMF 
                 self._handleIncomingDTMF(line)
                 return
             else:
@@ -906,7 +906,7 @@ class GsmModem(SerialComms):
         except:
             self.log.debug('Error parce DTMF number on line {0}'.format(line))
     def GetIncomingDTMF(self):
-        if (self.dtmfpool==0):
+        if (len(self.dtmfpool)==0):
             return None
         else:
             return self.dtmfpool.pop(0)
